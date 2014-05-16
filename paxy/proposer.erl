@@ -21,22 +21,22 @@ round(Name, Backoff, Round, Proposal, Acceptors, PanelId) ->
     PanelId ! {updateProp, "Round: " 
                ++ lists:flatten(io_lib:format("~p", [Round])), "Proposal: "
                ++ lists:flatten(io_lib:format("~p", [Proposal])), Proposal},
-    case ballot(Name, ..., ..., ..., PanelId) of
+    case ballot(Name, Round, Proposal, Acceptors, PanelId) of
         {ok, Decision} ->
             io:format("[Proposer ~w] ~w decided ~w in round ~w~n", 
                       [Name, Acceptors, Decision, Round]),
             {ok, Decision};
         abort ->
             timer:sleep(random:uniform(Backoff)),
-            Next = order:inc(...),
-            round(Name, (2*Backoff), ..., Proposal, Acceptors, PanelId)
+            Next = order:inc(Round),
+            round(Name, (2*Backoff), Next, Proposal, Acceptors, PanelId)
     end.
 
 ballot(Name, Round, Proposal, Acceptors, PanelId) ->
-    prepare(..., ...),
-    Quorum = (length(...) div 2) + 1,
+    prepare(Round, Acceptors),
+    Quorum = (length(Acceptors) div 2) + 1,
     Max = order:null(),
-    case collect(..., ..., ..., ...) of
+    case collect(Quorum, Round, Max, Proposal) of
         {accepted, Value} ->
             % update gui
             io:format("[Proposer ~w] set gui: Round ~w Proposal ~w~n", 
@@ -44,10 +44,10 @@ ballot(Name, Round, Proposal, Acceptors, PanelId) ->
             PanelId ! {updateProp, "Round: " 
                        ++ lists:flatten(io_lib:format("~p", [Round])), "Proposal: "
                        ++ lists:flatten(io_lib:format("~p", [Value])), Value},
-            accept(..., ..., ...),
-            case vote(..., ...) of
+            accept(Round, Value, Acceptors),
+            case vote(Quorum, Round) of
                 ok ->
-                    {ok, ...};
+                    {ok, Value};
                 abort ->
                     abort
             end;
@@ -56,7 +56,7 @@ ballot(Name, Round, Proposal, Acceptors, PanelId) ->
     end.
 
 collect(0, _, _, Proposal) ->
-    {accepted, ...};
+    {accepted, Proposal};
 collect(N, Round, MaxVoted, Proposal) ->
     receive 
         {promise, Round, _, na} ->
