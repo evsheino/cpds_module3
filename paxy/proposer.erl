@@ -17,14 +17,14 @@ init(Name, Proposal, Acceptors, Sleep, PanelId) ->
 round(Name, Backoff, Round, Proposal, Acceptors, PanelId) ->
     % Update gui
     io:format("[Proposer ~w] set gui: Round ~w Proposal ~w~n",
-    [Name, Round, Proposal]),
+              [Name, Round, Proposal]),
     PanelId ! {updateProp, "Round: " 
-    ++ lists:flatten(io_lib:format("~p", [Round])), "Proposal: "
-    ++ lists:flatten(io_lib:format("~p", [Proposal])), Proposal},
+               ++ lists:flatten(io_lib:format("~p", [Round])), "Proposal: "
+               ++ lists:flatten(io_lib:format("~p", [Proposal])), Proposal},
     case ballot(Name, ..., ..., ..., PanelId) of
         {ok, Decision} ->
             io:format("[Proposer ~w] ~w decided ~w in round ~w~n", 
-            [Name, Acceptors, Decision, Round]),
+                      [Name, Acceptors, Decision, Round]),
             {ok, Decision};
         abort ->
             timer:sleep(random:uniform(Backoff)),
@@ -40,10 +40,10 @@ ballot(Name, Round, Proposal, Acceptors, PanelId) ->
         {accepted, Value} ->
             % update gui
             io:format("[Proposer ~w] set gui: Round ~w Proposal ~w~n", 
-            [Name, Round, Value]),
+                      [Name, Round, Value]),
             PanelId ! {updateProp, "Round: " 
-            ++ lists:flatten(io_lib:format("~p", [Round])), "Proposal: "
-            ++ lists:flatten(io_lib:format("~p", [Value])), Value},
+                       ++ lists:flatten(io_lib:format("~p", [Round])), "Proposal: "
+                       ++ lists:flatten(io_lib:format("~p", [Value])), Value},
             accept(..., ..., ...),
             case vote(..., ...) of
                 ok ->
@@ -75,7 +75,7 @@ collect(N, Round, MaxVoted, Proposal) ->
         {sorry, _} ->
             collect(N, Round, MaxVoted, Proposal)
     after ?timeout ->
-            abort
+              abort
     end.
 
 vote(0, _) ->
@@ -91,19 +91,19 @@ vote(N, Round) ->
         {sorry, _} ->
             vote(N, Round)
     after ?timeout ->
-            abort
+              abort
     end.
 
 prepare(Round, Acceptors) ->
     Fun = fun(Acceptor) -> 
-        send(Acceptor, {prepare, self(), Round}) 
-    end,
+                  send(Acceptor, {prepare, self(), Round}) 
+          end,
     lists:map(Fun, Acceptors).
 
 accept(Round, Proposal, Acceptors) ->
     Fun = fun(Acceptor) -> 
-        send(Acceptor, {accept, self(), Round, Proposal}) 
-    end,
+                  send(Acceptor, {accept, self(), Round, Proposal}) 
+          end,
     lists:map(Fun, Acceptors).
 
 send(Name, Message) ->
