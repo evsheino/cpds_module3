@@ -1,20 +1,26 @@
 -module(acceptor).
 -export([start/2]).
 
+-define(delay, 200).
+
 start(Name, PanelId) ->
   spawn(fun() -> init(Name, PanelId) end).
 
 init(Name, PanelId) ->
   {A1,A2,A3} = now(),
   random:seed(A1, A2, A3),
-  Promised = order:null(), 
-  Voted = order:null(),
-  Value = na,
-  acceptor(Name, Promised, Voted, Value, PanelId).
+  {Promised, Voted, Value, PanelFromFile} = pers:read(Name),
+  if PanelFromFile == na ->
+       Panel = PanelId;
+     true -> Panel = PanelFromFile
+  end,
+  acceptor(Name, Promised, Voted, Value, Panel).
 
 acceptor(Name, Promised, Voted, Value, PanelId) ->
+  pers:store(Name, Promised, Voted, Value, PanelId),
   receive
     {prepare, Proposer, Round} ->
+      timer:sleep(random:uniform(?delay)),
       case order:gr(Round, Promised) of
         true ->
           Proposer ! {promise, Round, Voted, Value},               
@@ -37,6 +43,7 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
       end;
 
     {accept, Proposer, Round, Proposal} ->
+      timer:sleep(random:uniform(?delay)),
       case order:goe(Round, Promised) of
         true ->
           Proposer ! {vote, Round},
