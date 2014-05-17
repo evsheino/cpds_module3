@@ -60,13 +60,13 @@ collect(0, _, _, Proposal) ->
 collect(N, Round, MaxVoted, Proposal) ->
     receive 
         {promise, Round, _, na} ->
-            collect(..., ..., ..., ...);
+            collect(N-1, Round, MaxVoted, Proposal);
         {promise, Round, Voted, Value} ->
-            case order:gr(..., ...) of
+            case order:gr(Voted, MaxVoted) of
                 true ->
-                    collect(..., ..., ..., ...);
+                    collect(N-1, Round, Voted, Value);
                 false ->
-                    collect(..., ..., ..., ...)
+                    collect(N-1, Round, MaxVoted, Proposal)
             end;
         {promise, _, _,  _} ->
             collect(N, Round, MaxVoted, Proposal);
@@ -83,7 +83,7 @@ vote(0, _) ->
 vote(N, Round) ->
     receive
         {vote, Round} ->
-            vote(..., ...);
+            vote(N-1, Round);
         {vote, _} ->
             vote(N, Round);
         {sorry, {accept, Round}} ->
