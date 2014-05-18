@@ -9,12 +9,14 @@ start(Name, PanelId) ->
 init(Name, PanelId) ->
   {A1,A2,A3} = now(),
   random:seed(A1, A2, A3),
-  {Promised, Voted, Value, PanelFromFile} = pers:read(Name),
-  if PanelFromFile == na ->
-       Panel = PanelId;
-     true -> Panel = PanelFromFile
-  end,
-  acceptor(Name, Promised, Voted, Value, Panel).
+  %% Make sure that the table exists
+  {Promised, Voted, Value, Panel} = pers:read(Name),
+  case PanelId of
+    na ->
+      acceptor(Name, Promised, Voted, Value, Panel);
+    _ ->
+      acceptor(Name, order:null(), order:null(), na, PanelId)
+  end.
 
 acceptor(Name, Promised, Voted, Value, PanelId) ->
   pers:store(Name, Promised, Voted, Value, PanelId),
@@ -67,8 +69,9 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
           end;
         false ->
           Proposer ! {sorry, {accept, Round}},
-              acceptor(Name, Promised, Voted, Value, PanelId)
+          acceptor(Name, Promised, Voted, Value, PanelId)
       end;
     stop ->
+      pers:delete(Name),
       ok
   end.
