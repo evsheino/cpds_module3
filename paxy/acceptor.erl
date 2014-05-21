@@ -2,6 +2,7 @@
 -export([start/2]).
 
 -define(delay, 200).
+-define(drop, 5).
 
 start(Name, PanelId) ->
   spawn(fun() -> init(Name, PanelId) end).
@@ -25,7 +26,7 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
       timer:sleep(random:uniform(?delay)),
       case order:gr(Round, Promised) of
         true ->
-          Proposer ! {promise, Round, Voted, Value},               
+          send(Proposer, {promise, Round, Voted, Value}),
           % Update gui
           if
             Value == na ->
@@ -40,7 +41,7 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
                      ++ lists:flatten(io_lib:format("~p", [Round])), Colour},
           acceptor(Name, Round, Voted, Value, PanelId);
         false ->
-          Proposer ! {sorry, {prepare, Round}},
+          send(Proposer, {sorry, {prepare, Round}}),
           acceptor(Name, Promised, Voted, Value, PanelId)
       end;
 
@@ -48,7 +49,7 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
       timer:sleep(random:uniform(?delay)),
       case order:goe(Round, Promised) of
         true ->
-          Proposer ! {vote, Round},
+          send(Proposer, {vote, Round}),
           case order:goe(Round, Voted) of
             true ->
               % Update gui
@@ -68,10 +69,18 @@ acceptor(Name, Promised, Voted, Value, PanelId) ->
               acceptor(Name, Promised, Voted, Value, PanelId)
           end;
         false ->
-          Proposer ! {sorry, {accept, Round}},
+          send(Proposer, {sorry, {accept, Round}}),
           acceptor(Name, Promised, Voted, Value, PanelId)
       end;
     stop ->
       pers:delete(Name),
       ok
+  end.
+
+send(Name, Message) ->
+  case random:uniform(?drop) of
+    ?drop ->
+      io:format("message dropped~n");
+    _ ->
+      Name ! Message
   end.
