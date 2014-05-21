@@ -9,3 +9,5 @@ b
 c
 d
 e
+*.log
+*.pdf
