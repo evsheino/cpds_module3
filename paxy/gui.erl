@@ -96,6 +96,7 @@ gui(State) ->
             ok;  % we exit the loop
         stop ->
             wxWindow:destroy(Frame),
+            lists:map(fun(Pid) -> Pid ! stop end, AccIds ++ PropIds),
             ok;  % we exit the loop
         Msg ->
             %Everything else ends up here
@@ -147,7 +148,8 @@ acceptor(AccPanel, AccSizerIn, BgColour, L1, L2) ->
         {updateAcc, Round, Promise, Colour} ->
             updatePanel(AccPanel, L1, L2, Round, Promise, Colour),
             wxWindow:fit(AccPanel),
-            acceptor(AccPanel, AccSizerIn, BgColour, L1, L2)
+            acceptor(AccPanel, AccSizerIn, BgColour, L1, L2);
+        stop -> ok
     end.
 
 % initialize a proposer
@@ -171,7 +173,8 @@ proposer(PropPanel, PropSizerIn, BgColour, L1, L2) ->
         {updateProp, Round, Proposal, Colour} ->
             updatePanel(PropPanel, L1, L2, Round, Proposal, Colour),
             wxWindow:fit(PropPanel),
-            proposer(PropPanel, PropSizerIn, BgColour, L1, L2)
+            proposer(PropPanel, PropSizerIn, BgColour, L1, L2);
+        stop -> ok
     end.
 
 % set a Panel
