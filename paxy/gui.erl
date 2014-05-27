@@ -96,6 +96,7 @@ gui(State) ->
             ok;  % we exit the loop
         stop ->
             wxWindow:destroy(Frame),
+            %% Kill the panel processes as well
             lists:map(fun(Pid) -> Pid ! stop end, AccIds ++ PropIds),
             ok;  % we exit the loop
         Msg ->

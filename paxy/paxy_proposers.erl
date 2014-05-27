@@ -6,12 +6,15 @@
 -define(GREEN, {0,255,0}).
 
 % Sleep is a list with the initial sleep time for each proposer
+% AccController is the remote process that handles the acceptors and the gui
 start(Sleep, AccController) ->
     ProposerNames = ["Proposer 1", "Proposer 2", "Proposer 3"],
     PropInfo = [{kurtz, ?RED}, {kilgore, ?GREEN}, {willard, ?BLUE}],
     register(control, self()),
+    %% Send the proposer information to the acceptor node.
     AccController ! {props, {control, node()}, {PropInfo, ProposerNames}},
     receive
+        %% Receive the acceptor and gui references.
         {acc, AccRegister, PropIds} ->
             io:format("AccRegister ~w PropIds ~w ~n",
                         [AccRegister, PropIds]),
