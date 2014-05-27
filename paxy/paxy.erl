@@ -70,5 +70,6 @@ crash(Name) ->
         Pid ->
             unregister(Name),
             exit(Pid, "crash"),
+            io:format("~p CRASHED!~n", [Name]),
             register(Name, acceptor:start(Name, na))
     end.
