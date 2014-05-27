@@ -14,6 +14,7 @@ init(Name, PanelId) ->
   {Promised, Voted, Value, Panel} = pers:read(Name),
   case PanelId of
     na ->
+      io:format("Restarting acceptor ~p~n", [Name]),
       acceptor(Name, Promised, Voted, Value, Panel);
     _ ->
       acceptor(Name, order:null(), order:null(), na, PanelId)
