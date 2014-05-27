@@ -36,7 +36,7 @@ ballot(Name, Round, Proposal, Acceptors, PanelId) ->
     prepare(Round, Acceptors),
     Quorum = (length(Acceptors) div 2) + 1,
     Max = order:null(),
-    case collect(Quorum, Round, Max, Proposal) of
+    case collect(Quorum, Round, Max, Proposal, Quorum) of
         {accepted, Value} ->
             % update gui
             io:format("[Proposer ~w] set gui: Round ~w Proposal ~w~n", 
@@ -45,7 +45,7 @@ ballot(Name, Round, Proposal, Acceptors, PanelId) ->
                        ++ lists:flatten(io_lib:format("~p", [Round])), "Proposal: "
                        ++ lists:flatten(io_lib:format("~p", [Value])), Value},
             accept(Round, Value, Acceptors),
-            case vote(Quorum, Round) of
+            case vote(Quorum, Round, Quorum) of
                 ok ->
                     {ok, Value};
                 abort ->
@@ -55,41 +55,53 @@ ballot(Name, Round, Proposal, Acceptors, PanelId) ->
             abort
     end.
 
-collect(0, _, _, Proposal) ->
+collect(0, _, _, Proposal, _) ->
     {accepted, Proposal};
-collect(N, Round, MaxVoted, Proposal) ->
+collect(N, Round, MaxVoted, Proposal, MaxSorries) ->
     receive 
         {promise, Round, _, na} ->
-            collect(N-1, Round, MaxVoted, Proposal);
+            collect(N-1, Round, MaxVoted, Proposal, MaxSorries);
         {promise, Round, Voted, Value} ->
             case order:gr(Voted, MaxVoted) of
                 true ->
-                    collect(N-1, Round, Voted, Value);
+                    collect(N-1, Round, Voted, Value, MaxSorries);
                 false ->
-                    collect(N-1, Round, MaxVoted, Proposal)
+                    collect(N-1, Round, MaxVoted, Proposal, MaxSorries)
             end;
         {promise, _, _,  _} ->
-            collect(N, Round, MaxVoted, Proposal);
+            collect(N, Round, MaxVoted, Proposal, MaxSorries);
         {sorry, {prepare, Round}} ->
-            collect(N, Round, MaxVoted, Proposal);
+            M = MaxSorries-1,
+            if M == 0 ->
+                io:format("Proposer ~p aborting collect due to amount of sorries~n", [self()]),
+                abort;
+            true ->
+                collect(N, Round, MaxVoted, Proposal, M)
+            end;
         {sorry, _} ->
-            collect(N, Round, MaxVoted, Proposal)
+            collect(N, Round, MaxVoted, Proposal, MaxSorries)
     after ?timeout ->
               abort
     end.
 
-vote(0, _) ->
+vote(0, _, _) ->
     ok;
-vote(N, Round) ->
+vote(N, Round, MaxSorries) ->
     receive
         {vote, Round} ->
-            vote(N-1, Round);
+            vote(N-1, Round, MaxSorries);
         {vote, _} ->
-            vote(N, Round);
+            vote(N, Round, MaxSorries);
         {sorry, {accept, Round}} ->
-            vote(N, Round);
+            M = MaxSorries-1,
+            if M == 0 ->
+                io:format("Proposer ~p aborting vote due to amount of sorries~n", [self()]),
+                abort;
+            true ->
+                vote(N, Round, M)
+            end;
         {sorry, _} ->
-            vote(N, Round)
+            vote(N, Round, MaxSorries)
     after ?timeout ->
               abort
     end.
