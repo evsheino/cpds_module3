@@ -27,6 +27,7 @@ stopClients([]) -> ok;
 stopClients([Pid|L]) ->
     Pid ! {stop, self()},
     receive
-        {done, Pid} -> ok
+        {done, Pid} -> ok,
+	io:format("validad")
     end,
     stopClients(L).

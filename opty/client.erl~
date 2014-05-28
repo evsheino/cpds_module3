@@ -41,6 +41,7 @@ do_transactions(Name, Entries, Updates, Server, Handler, Total, Ok, N) ->
     Num = random:uniform(Entries),
     Handler ! {read, Ref, Num},
     Value = receiveValue(Ref),
+	io:format("received commit"),
     Handler ! {write, Num, Value+1},
     do_transactions(Name, Entries, Updates, Server, Handler, Total, Ok, N-1).
 

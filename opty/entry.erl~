@@ -17,7 +17,7 @@ entry(Value, Time) ->
         {check, Ref, Readtime, From} ->
             if 
                 Readtime == Time ->
-		    From ! {Ref, ok};
+		    From ! {Ref, ok}
                 true ->
                     From ! {Ref, abort}
             end,
