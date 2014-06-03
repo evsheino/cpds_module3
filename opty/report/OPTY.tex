@@ -1,0 +1,88 @@
+\documentclass[a4paper, 11pt]{article}
+\usepackage[utf8]{inputenc} % Change according your file encoding
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{listings}
+
+%opening
+\title{Seminar Report: Opty}
+\author{Erkki Heino, Bastien Scanu}
+\date{\today{}}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+This session consists in the implementation of a transaction server using optimistic concurrency control.
+
+
+\section{Work done}
+
+
+\section{Experiments}
+
+\subsection{Number of clients}
+In this experiment, we will study the influence of the number of clients on the success rate of transactions. We will set the number of entries to 10, the number of updates per transaction to 4 and the time to ten seconds. We did the experiment for 1 to 11 clients.
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.5]{exp1.png}
+\caption{Impact of the number of clients on the average success rate}
+\end{center}
+\end{figure}
+
+\subsubsection{Open Question}
+As we see in the figure, the average success rate of transactions decreases when the number of clients increases. Moreover, this success rate seems to be close to 100/number of clients. We also observe that the success rate is the same for all the clients (less than 1\% of difference in all the cases).
+
+
+\subsection{Number of entries}
+In this experiment, we will study the influence of the number of entries on the success rate of transactions. We will set the number of clients to 10, the number of updates per transaction to 4 and the time to ten seconds. We did the experiment for 1 to 11 entries, and two others measurements for 20 and 50, just in order to see if there is a more significant evolution with bigger numbers.
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.5]{exp2.png}
+\caption{Impact of the number of entries on the average success rate}
+\end{center}
+\end{figure}
+
+\subsubsection{Open Question}
+As we see in the figure, there is no clear correlation between the number of entries and the succes rate of transactions. The only thing that we can say is that the rate is higher when there is only one entry (around 29\%, against 27\% for other values, the experiment was repeated several times with the same result). We also observe that the success rate is the same for all the clients (less than 1\% of difference in all the cases).
+
+
+\subsection{Number of updates}
+In this experiment, we will study the influence of the number of updates on the success rate of transactions. We will set the number of clients to 4, the number of entries to 10 and the time to ten seconds. We did the experiment for 1 to 11 updates, and one other measurement for 50, just in order to see if there is a more significant evolution with bigger numbers.
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.5]{exp3.png}
+\caption{Impact of the number of clients on the average success rate}
+\end{center}
+\end{figure}
+
+\subsubsection{Open Question}
+As we see in the figure, the average success rate of transactions decreases when the number of clients increases, from 32,5\% for 1 update to 25,5\% for ten. For numbers bigger than ten entries, the evolution is negligible. We also observe that the success rate is the same for all the clients (less than 1\% of difference in all the cases).
+
+
+\subsection{Ratio of read and write operations per transaction}
+In this experiment, we will study the influence of ratio of read and write operations per transaction on the success rate of transactions. We will set the number of clients to 4, the number of entries to 10, the number of updates to 4 and the time to ten seconds.
+
+
+\subsubsection{Open Question}
+
+
+\subsection{Percentage of accessed entries}
+In this experiment, we will study the influence of the percentage of accessed entries on the success rate of transactions. We will set the number of clients to 4, the number of entries to 10, the number of updates to 4 and the time to ten seconds.
+
+
+\subsubsection{Open Question}
+
+\subsection{Split the opty module}
+
+\subsubsection{Open Question}
+
+\section{Personal opinion}
+
+
+\end{document}
