@@ -41,7 +41,12 @@ do_transactions(Name, Entries, Updates, Server, Handler, Total, Ok, N, Reads, Wr
     Num = random:uniform(Entries),
     do_reads(Handler, Ref, Num, Reads),
 %    Handler ! {read, Ref, Num},
-    Value = receiveValue(Ref),
+    if
+	Reads == 0 ->
+	    Value = 1;
+	true ->
+	    Value = receiveValue(Ref)
+    end,
     do_writes(Handler, Num, Value, Writes),
 %    Handler ! {write, Num, Value+1},
     do_transactions(Name, Entries, Updates, Server, Handler, Total, Ok, N-1, Reads, Writes).
