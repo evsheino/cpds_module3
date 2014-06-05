@@ -3,8 +3,12 @@
 
 %% Clients: Number of concurrent clients in the system
 %% Entries: Number of entries in the store
-%% Updates: Number of write operations per transaction
+%% Updates: ??
 %% Time: Duration of the experiment (in secs)
+%% Reads: Number of reads per transaction.
+%% Writes: Numbero of writes per transaction.
+%% Num_Subset: Size of each clients entry set.
+%% Server: Remote id of the server process.
 start(Clients, Entries, Updates, Time, Reads, Writes, Num_Subset, Server) ->
     L = startClients(Clients, [], Entries, Updates, Reads, Writes, Num_Subset, Server),
     io:format("Starting: ~w CLIENTS, ~w ENTRIES, ~w UPDATES PER TRANSACTION, 
