@@ -66,14 +66,20 @@ As we see in the figure, the average success rate of transactions decreases when
 
 
 \subsection{Ratio of read and write operations per transaction}
-In this experiment, we will study the influence of ratio of read and write operations per transaction on the success rate of transactions. We will set the number of clients to 4, the number of entries to 10, the number of updates to 4 and the time to ten seconds.
+In this experiment, we will study the influence of ratio of read and write operations per transaction on the success rate of transactions. We will set the number of clients to 4, the number of entries to 10, the number of updates to 4 and the time to ten seconds. We did the experiment for different ratios: when there is only one kind of operation performed, and for ratios of 2, 3, 4, 5 and 10.
 
+\begin{figure}[H]
+\begin{center}
+\includegraphics[scale=0.5]{exp4.png}
+\caption{Impact of the read/write ratio on the average success rate}
+\end{center}
+\end{figure}
 
 \subsubsection{Open Question}
-
+We can see on Figure4 that the uncommited transactions are the result of the concurrency between read and write operations. Indeed, when we perform only reads or only writes, we can see that all transactions are commited. We also not that when we have a number of writes superior or equal to the number of reads (and if there is at least one read operation), we always have the same average success rate for any ratio. Finally, when we have more reads than writes, the average succes rate increases when the ration increases.
 
 \subsection{Percentage of accessed entries}
-In this experiment, we will study the influence of the percentage of accessed entries on the success rate of transactions. We will set the number of clients to 4, the number of entries to 10, the number of updates to 4 and the time to ten seconds.
+In this experiment, we will study the influence of the percentage of accessed entries on the success rate of transactions. We will set the number of clients to 4, the number of entries to 10, the number of updates to 4 and the time to ten seconds. We tried the experiment with values from 10\% until 100\%.
 
 
 \subsubsection{Open Question}
