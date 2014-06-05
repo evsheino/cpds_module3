@@ -1,5 +1,5 @@
 -module(opty_clients).
--export([start/8, stop/1]).
+-export([start/8, stop/2]).
 
 %% Clients: Number of concurrent clients in the system
 %% Entries: Number of entries in the store
