@@ -15,12 +15,13 @@
 \maketitle
 
 \section{Introduction}
-This session consists in the implementation of a transaction server using optimistic concurrency control.
-
+This session consists of the implementation of a transaction server using optimistic concurrency control.
 
 \section{Work done}
-For the basic program, we just had to fill the gaps so we didn't have to take major design decisions. We took some decisions when we modified the files to do the experiments.\\
-To modify the Read/Write ratio, we modified the do\_transactions function, replacing the write and the read by twxo functions \emph{do\_reads} and \emph{do\_writes}:
+For the basic program, we just had to fill the gaps so we didn't have to take major design decisions. We took some decisions when we modified the files to do the experiments.
+
+To modify the Read/Write ratio, we modified the do\_transactions function, replacing the write and the read by two functions \emph{do\_reads} and \emph{do\_writes}:
+
 \lstset{language=erlang}   
 \begin{lstlisting}
 do_reads(_, _, _, 0) ->
@@ -38,7 +39,8 @@ do_writes(Handler, Num, Value, N) ->
     do_writes(Handler, Num, Value+1, N-1).
 
 \end{lstlisting}
-The number of reads and writes to do during one transaction were implemented as parameters of the \emph{opty:start} function.\\ \\ 
+
+The number of reads and writes to do during one transaction were implemented as parameters of the \emph{opty:start} function.
 
 To generate randomly a subset of n entries, we created a dedicated function in the opty module.
 \begin{lstlisting}
@@ -131,10 +133,18 @@ In this experiment, we will study the influence of the percentage of accessed en
 \subsubsection{Open Question}
 As we could expect, we see that the success rate decreases when the percentage of accessed entries increases, because the risk of conflicts is higher. The success rate is different for each client and depends on the different subset of entries accessed by all the clients. If a client has in its subset only entries that other clients cannot access, its success rate will be 100\%, but the more entries it has to share with other clients, the more its success rate will decrease. The success rate highly depends on the random generation of the subset, so we repeated each experiment ten times and took the average value to have something meaningful.
 
-
 \subsection{Split the opty module}
+The module can quite easily be split into two parts where the other handles the store and the other the clients. The store part (opty\_store) only launches the server process and the client part (opty\_clients) handles the rest of the modules original duties. The complete functionality of the opty\_store module can be seen here:
+
+\begin{lstlisting}
+start(Entries) ->
+    register(s, server:start(Entries)).
+\end{lstlisting}
+
+The opty\_clients module sends the stop message to the server once the clients are finished.
 
 \subsubsection{Open Question}
+As it stands the handler is run where the associated client is run because each client launches its handler.
 
 \section{Personal opinion}
 This activity seems to be a logical continuation of the Paxy seminar. The program is more complete and also very interesting, and the experiments allowed us to understand better how the algorithm works.
