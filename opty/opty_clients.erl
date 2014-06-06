@@ -3,7 +3,7 @@
 
 %% Clients: Number of concurrent clients in the system
 %% Entries: Number of entries in the store
-%% Updates: ??
+%% Updates: Number of updates per transaction.
 %% Time: Duration of the experiment (in secs)
 %% Reads: Number of reads per transaction.
 %% Writes: Numbero of writes per transaction.

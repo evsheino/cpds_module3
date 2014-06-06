@@ -3,8 +3,11 @@
 
 %% Clients: Number of concurrent clients in the system
 %% Entries: Number of entries in the store
-%% Updates: Number of write operations per transaction
+%% Updates: Number of times a set of reads and writes are performed in a transaction.
 %% Time: Duration of the experiment (in secs)
+%% Reads: Number of reads in an update.
+%% Writes: Number of writes in an update.
+%% Num_Subset: Size of each client's entry set.
 start(Clients, Entries, Updates, Time, Reads, Writes, Num_Subset) ->
     register(s, server:start(Entries)),
     L = startClients(Clients, [], Entries, Updates, Reads, Writes, Num_Subset),
